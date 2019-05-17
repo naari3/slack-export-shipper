@@ -1,3 +1,11 @@
+PATH
+  remote: .
+  specs:
+    slack_gijiroku (0.1.0)
+      elasticsearch
+      ruby-progressbar
+      thor
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -51,19 +59,20 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 1.7)
     ruby-progressbar (1.10.0)
+    thor (0.20.3)
     unicode-display_width (1.6.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  elasticsearch
+  bundler (~> 1.16)
   pry
   pry-byebug
-  rake
+  rake (~> 12.3)
   rspec (~> 3.0)
   rubocop
-  ruby-progressbar
+  slack_gijiroku!
 
 BUNDLED WITH
    1.17.3

@@ -1,16 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'lib/slack_gijiroku'
+require 'bundler/gem_tasks'
+require 'rspec/core/rake_task'
 
-desc '[bundle exec] rake ship logdir=/path/to/unzipped/logs [host=localhost:9200] [channel=general]'
-task :ship do
-  # elasticsearch's host address
-  host = ENV['host'] || 'localhost:9200'
-  shipper = SlackGijiroku::Shipper.new(ENV['logdir'], host)
+RSpec::Core::RakeTask.new(:spec)
 
-  if ENV['channel'].nil?
-    shipper.ship
-  else
-    shipper.ship_channel(ENV['channel'])
-  end
-end
+task default: :spec
