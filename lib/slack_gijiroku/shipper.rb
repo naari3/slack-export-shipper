@@ -5,11 +5,10 @@ require 'elasticsearch'
 require 'fileutils'
 require 'json'
 require 'logger'
-require 'pp'
-require 'pry'
 require 'ruby-progressbar'
 
 module SlackGijiroku
+  # transfer slack extracted logs to elasticsearch
   class Shipper
     def initialize(logdir, host, index_prefix: 'slack', workspace: '')
       @logger = Logger.new(STDOUT)
