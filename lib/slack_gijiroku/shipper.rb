@@ -35,7 +35,7 @@ module SlackGijiroku
     end
 
     def users
-      @users ||= JSON.parse(File.open("#{@logdir}/users.json"))
+      @users ||= JSON.parse(File.open("#{@logdir}/users.json").read)
       @users
     end
 
@@ -64,7 +64,7 @@ module SlackGijiroku
         next if ['.', '..'].include?(i)
 
         channel[i.chomp('.json')] = JSON.parse(
-          File.open("#{@logdir}/#{channel_name}/#{i}")
+          File.open("#{@logdir}/#{channel_name}/#{i}").read
         )
       end
 
