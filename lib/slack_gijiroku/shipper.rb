@@ -1,5 +1,4 @@
-#!/usr/bin/env ruby
-# coding: utf-8
+# frozen_string_literal: true
 
 require 'date'
 require 'elasticsearch'
@@ -10,14 +9,14 @@ require 'pp'
 require 'pry'
 require 'ruby-progressbar'
 
-module SlackExportShipper
+module SlackGijiroku
   class Shipper
     def initialize(logdir, host, index_prefix: 'slack', workspace: '')
       @logger = Logger.new(STDOUT)
 
       @logdir = logdir
       @es = Elasticsearch::Client.new(host: host, request_timeout: 180)
-      @index_prefix = 'slack'
+      @index_prefix = index_prefix
       @workspace = workspace
       @batch_size = 500
     end
@@ -37,26 +36,26 @@ module SlackExportShipper
     end
 
     def users
-      @users ||= JSON.load(File.open("#{@logdir}/users.json"))
-      return @users
+      @users ||= JSON.parse(File.open("#{@logdir}/users.json"))
+      @users
     end
 
     def userid2name(id)
-      user = users.find {|i| i['id'] == id }
-      return user.nil? ? id : user['name']
+      user = users.find { |i| i['id'] == id }
+      user.nil? ? id : user['name']
     end
 
     def name2userid(name)
-      user = users.find {|i| i['name'] == name }
-      return user.nil? ? nil : user['id']
+      user = users.find { |i| i['name'] == name }
+      user.nil? ? nil : user['id']
     end
 
     def channels
       @channels ||= Dir.entries(@logdir).select do |i|
-        File.directory?(File.join(@logdir, i)) and ['.', '..'].include?(i).!
+        File.directory?(File.join(@logdir, i)) && ['.', '..'].include?(i).!
       end
 
-      return @channels
+      @channels
     end
 
     def load_channel(channel_name)
@@ -64,10 +63,13 @@ module SlackExportShipper
 
       Dir.entries("#{@logdir}/#{channel_name}").each do |i|
         next if ['.', '..'].include?(i)
-        channel[i.chomp('.json')] = JSON.load(File.open("#{@logdir}/#{channel_name}/#{i}"))
+
+        channel[i.chomp('.json')] = JSON.parse(
+          File.open("#{@logdir}/#{channel_name}/#{i}")
+        )
       end
 
-      return channel
+      channel
     end
 
     # regroup by local date for elasticsearch's indexing
@@ -93,13 +95,13 @@ module SlackExportShipper
         docs[index] << i
       end
 
-      return docs
+      docs
     end
 
     def bulk_index(docs)
       bulk_body = []
-      total = docs.values.inject(0){|m, i| m + i.size}
-      pb = ProgressBar.create(total: total, format: "|%B| %c/%C")
+      total = docs.values.inject(0) { |m, i| m + i.size }
+      pb = ProgressBar.create(total: total, format: '|%B| %c/%C')
 
       docs.each do |index, messages|
         messages.each do |message|
@@ -112,14 +114,14 @@ module SlackExportShipper
           }
         end
 
-        if bulk_body.size > @batch_size
-          @es.bulk(body: bulk_body) if bulk_body.size > @batch_size
-          pb.progress += bulk_body.size
-          bulk_body = []
-        end
+        next unless bulk_body.size > @batch_size
+
+        @es.bulk(body: bulk_body) if bulk_body.size > @batch_size
+        pb.progress += bulk_body.size
+        bulk_body = []
       end
 
-      @es.bulk body:bulk_body unless bulk_body.empty?
+      @es.bulk body: bulk_body unless bulk_body.empty?
       pb.progress += bulk_body.size
     end
   end
