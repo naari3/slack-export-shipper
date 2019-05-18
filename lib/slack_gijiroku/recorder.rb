@@ -4,8 +4,6 @@ require 'elasticsearch'
 require 'memoist'
 require 'slack-ruby-client'
 
-require 'pry'
-
 module SlackGijiroku
   # transfer slack extracted logs to elasticsearch
   class Recorder
