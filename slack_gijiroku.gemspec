@@ -22,12 +22,13 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
-
+  
+  spec.add_dependency 'async-websocket', '~> 0.8.0'
   spec.add_dependency 'elasticsearch'
+  spec.add_dependency 'memoist'
   spec.add_dependency 'ruby-progressbar'
   spec.add_dependency 'slack-ruby-client'
   spec.add_dependency 'thor'
-  spec.add_dependency 'async-websocket', '~> 0.8.0'
 
   spec.add_development_dependency 'bundler', '~> 1.16'
   spec.add_development_dependency 'pry'

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'elasticsearch'
+require 'memoist'
 require 'slack-ruby-client'
 
 require 'pry'
@@ -8,6 +9,8 @@ require 'pry'
 module SlackGijiroku
   # transfer slack extracted logs to elasticsearch
   class Recorder
+    extend Memoist
+
     def initialize(token, host, index_prefix: 'slack', workspace: '')
       @logger = Logger.new(STDOUT)
 
@@ -51,9 +54,15 @@ module SlackGijiroku
       bulk_index(doc)
     end
 
+    def channelid2name(id)
+      @web_client.channels_info(channel: id)['channel']['name']
+    end
+    memoize :channelid2name
+
     def userid2name(id)
       @web_client.users_info(user: id)['user']['name']
     end
+    memoize :userid2name
 
     # regroup by local date for elasticsearch's indexing
     def aggregate(channel_messages, channel_name: '')
