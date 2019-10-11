@@ -12,8 +12,8 @@ module SlackGijiroku
     option :host
     option :channel
     def ship(logdir)
-      host = options[:host] || 'localhost:9200'
-      channel = options[:channel]
+      host = options[:host] || ENV['ES_HOST']
+      channel = options[:channel] || ENV['TARGET_CHANNEL']
 
       shipper = SlackGijiroku::Shipper.new(logdir, host)
 
@@ -28,8 +28,8 @@ module SlackGijiroku
     option :token, required: true
     option :host
     def record
-      token = options[:token]
-      host = options[:host] || 'localhost:9200'
+      token = options[:token] || ENV['HUBOT_SLACK_TOKEN']
+      host = options[:host] || ENV['ES_HOST']
 
       recorder = SlackGijiroku::Recorder.new(token, host)
       recorder.rtm_start!
