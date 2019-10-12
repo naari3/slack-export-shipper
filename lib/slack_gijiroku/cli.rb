@@ -28,7 +28,7 @@ module SlackGijiroku
     option :token, required: true
     option :host
     def record
-      token = options[:token] || ENV['HUBOT_SLACK_TOKEN']
+      token = options[:token] || ENV['SLACK_TOKEN']
       host = options[:host] || ENV['ES_HOST']
 
       recorder = SlackGijiroku::Recorder.new(token, host)
